@@ -105,12 +105,12 @@ function loadHandler( img ){
 	total++;
 	
 	if( img.height < 160 ){
-		$('#c'+lckey).text(lckey + ': loaded '+loaded[lckey].loaded+'/32, found '+loaded[lckey].found+'/32 elapsed, ' + (+new Date() - loaded[lckey].start) + 'ms');
+		$('#c'+lckey).text(lckey + ': loaded '+loaded[lckey].loaded+'/32, found '+loaded[lckey].found+'/32, elapsed ' + (+new Date() - loaded[lckey].start) + 'ms');
 		return false;
 	}
 
 	loaded[lckey].found++;
-	$('#c'+lckey).text(lckey + ': loaded '+loaded[lckey].loaded+'/32, found '+loaded[lckey].found+'/32, elapsed, ' + (+new Date() - loaded[lckey].start) + 'ms');
+	$('#c'+lckey).text(lckey + ': loaded '+loaded[lckey].loaded+'/32, found '+loaded[lckey].found+'/32, elapsed ' + (+new Date() - loaded[lckey].start) + 'ms');
 	
 	$('#results > .item, #results .info').slice( 50 ).remove();
 	
