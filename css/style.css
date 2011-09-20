@@ -287,8 +287,12 @@ span > a{
 
 .item span a{
 	display:inline-block;
-	margin:0px 3px;
+	margin:0px 2px;
 	background:#bbb;
+}
+
+.item span a.heart{
+	color:#f00;
 }
 
 .hr{
@@ -315,11 +319,35 @@ h1{
 	font-size:34px;
 	height:64px;
 	text-align:center;
+	position:relative;
 }
 
 h1 img{
 	vertical-align:middle;
 	margin-right:10px;
+}
+
+h1 a{
+	position:absolute;
+	right:0px;
+	top:-40px;
+	font-size:80px;
+	font-family:arial;
+	color:#f00;
+	text-decoration:none;
+}
+
+h1 a:visited{ color:#f00; }
+
+h1 a span{
+	font-size:10px;
+	background:#000;
+	color:#fff;
+	position:absolute;
+	bottom:60px;
+	right:0px;
+	border-radius:2px;
+	padding:2px;
 }
 
 h2{
@@ -333,11 +361,14 @@ h2{
 }
 
 #nsfw_notice h1{
+	padding-top:20px;
 	margin-top:0px;
-	padding-top:100px;
+	line-height:auto;
+	height:auto;
 }
 
 #nsfw_notice p, #nsfw_notice h2{
+	clear:both;
 	width:500px;
 	margin:0 auto 20px auto;
 }
