@@ -192,17 +192,32 @@ function loadHandler( img, isTimeout ){
 
 function updateHeart( amount ){
 	
-	if( amount ){
-		$('h1 a span').text( amount );
-		return;
-	}
+
 	
 	try{
-		var h = localStorage.getItem('hearts');
-		if( h ){
-			$('h1 a span').text( h.split(',').length );
-			
+		if( !amount ){
+			var h = localStorage.getItem('hearts');
+			if( h ){
+				amount = h.split(',').length;
+			}
 		}
 	}
-	catch(e){}	
+	catch(e){ amount = 0 }	
+	
+	if( amount ){
+		$('h1 a span').text( amount );
+	}
+	
+	if( $('#clear-history').length == 0 ){
+		$('<button>')
+			.prop('id','clear-history')
+			.text('clear \u2764')
+			.insertAfter('#abt')
+			.click( function(e){
+				localStorage.removeItem('hearts');
+				$('h1 a span').text(0);
+				$(this).remove();
+			});
+	}
+	
 }

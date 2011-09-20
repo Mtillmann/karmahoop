@@ -234,6 +234,11 @@ input{
 	width: 55px;
 }
 
+button{
+	display:inline;
+	margin:0 4px;
+}
+
 button , span > a{
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 13px;
