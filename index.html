@@ -17,15 +17,15 @@
 </head>
 <body>
 <div id="wrap">
-	<h1><img src="images/logo-64.png">karmahoop</h1>
+	<h1><img src="images/logo-64.png">karmahoop<a href="#" title="show the images you have remembered">&#x2764;<span>0</span></a></h1>
 
 	<div id="controls">
-		<button id="gen">generate</button>
-		<input placeholder="5 chars" maxlength="5">
-		<button id="chk">check</button>
-		<button id="clr">clear</button>
-		<button id="stm">&#9658;stream</button>
-		<button id="abt">about</button>
+		<button id="gen">generate</button
+		><input placeholder="code" maxlength="5"
+		><button id="chk">check</button
+		><button id="clr">clear</button
+		><button id="stm">&#9658;stream</button
+		><button id="abt">about</button>
 	</div>
 	<div id="results"></div>
 	<div id="console"></div>
@@ -109,7 +109,7 @@
 </div>
 <div style="display:none;">
 	<div id="nsfw_notice">
-		<h1><img src="images/logo-64.png">karmahoop</h1>
+		<h1><img src="images/logo-256.png"><br>karmahoop</h1>
 		<h2>Content Warning</h2>
 		<p>This page will pull random images from a top ranked image sharing site (imgur.com), therefore the risk of
 		being exposed to offensive or inappropriate images is very high.</p>
@@ -121,9 +121,26 @@
 	</div>
 </div>
 <a href="https://github.com/Mtillmann/karmahoop"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub"></a>
-
+<script type="text/html" id="item">
+	<div class="item">
+		<a class="thumb" href="http://i.imgur.com/{{key}}.jpg">
+			<img src="http://i.imgur.com/{{key}}b.jpg">
+		</a>
+		<span>
+			<a href="#" class="heart" title="remember this image">&#x2764;</a>
+			<a target="_blank" href="http://reddit.com/s/http://imgur.com/{{key}}">r<sup>1</sup></a>
+			<a target="_blank" href="http://reddit.com/s/http://i.imgur.com/{{key}}.jpg">r<sup>1</sup></a>
+			<a target="_blank" href="http://facebook.com/sharer.php?u=http://i.imgur.com/{{key}}.jpg">f</a>
+			<a target="_blank" href="https://m.google.com/app/plus/x/?v=compose&content==http://i.imgur.com/{{key}}.jpg">g+</a>
+		</span>
+	</div>
+</script>
+<script type="text/html" id="log">
+{{key}}: loaded:{{loaded}}, found:{{found}}, timeout:{{timeout}} in {{elapsed}}ms
+</script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.4.min.js"><\/script>')</script>
+<script src="js/icanhaz.js"></script>
 <script src="js/jquery.colorbox-min.js"></script>
 <script src="js/script.js"></script>
 

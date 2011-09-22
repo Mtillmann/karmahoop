@@ -19,6 +19,40 @@ $(function(){
 		});
 	});
 	
+	updateHeart();
+	
+	$('h1 a').click( function( e ){
+		e.preventDefault();
+		$('#clr').click();
+		try{
+			var h = localStorage.getItem('hearts');
+			if( h ){
+				h = h.split(',').reverse();
+				for( var i = 0; i < h.length; i++ ){
+					ich.item( { key : h[i] }).appendTo( '#results' );
+				}
+			}
+		}catch(e){};
+		
+	});
+	
+	$('#results').delegate('.heart', 'click', function( e ){
+		e.preventDefault();
+		var code = /.+\/(\w+)b\.jpg$/.exec( $( this ).parents('.item').find('img').prop('src') );
+		var hearts = localStorage.getItem('hearts');
+		hearts = hearts?hearts.split(','):[];
+		
+		if( $.inArray( code[1], hearts) < 0 ){
+			hearts.push( code[1] );
+			$(this).fadeOut(155).fadeIn(155);
+			$('h1 a').fadeOut(155).fadeIn(155);
+			
+		}
+		updateHeart( hearts.length );
+		console.log( hearts.length );
+		localStorage.setItem('hearts', hearts.join(',') );
+	});
+	
 	$('#gen').click( function(){
 		for( var i = 0,s =''; i < 5; i++ ){ 
 			//numbers wont give good results
@@ -58,17 +92,17 @@ $(function(){
 		var ipt = $('input')
 		, v = ipt.val()
 		, str = ''
-		, i = 0, j = 0;
+		, i = 0, j = 0, img;
 		
 		running = true;
 		
-		if( v.length !== 5 ){
+		if( v.length === 0 ){
 			ipt.fadeOut(155).fadeIn(155);
 			return false;
 		}
 		
 		$('<p>').prop('id','c'+v).prependTo( '#console' );
-		loaded[v] = { loaded : 0, found : 0, start : +new Date() };
+		loaded[v] = { loaded : 0, found : 0, start : +new Date(), timeout : 0 };
 		$('#console p').slice(7).remove();
 		
 		
@@ -78,20 +112,39 @@ $(function(){
 				str += v.substr(j,1)[ 'to' + ((i >> j) % 2?'Upper':'Lower') +'Case']()
 			}
 
-			$('<img>').data('key',str)
+			img = $('<img>').data('key',str)
 			.load( function(){
 				loadHandler( this );
-			} ).prop('src','http://i.imgur.com/'+str+'b.jpg');
+			} ).prop('src','http://i.imgur.com/'+str+'b.jpg')
+			.data('timeout', setTimeout(( function( me ){
+				return function(){
+					console.log('timeout', $(me).data('key'));
+
+					loadHandler( me, true );
+				}
+			})( img ), 5000 ));
 
 			i++;
 		}
 	});
+	
+	var hasUrl = /[\?|#].+\.com\/(\w{5,})?/.exec( window.location.toString() ),
+	hasHash = /[\?|#](\w{5,})/.exec( window.location.toString() ),
+	input;
+	if( input = (hasUrl && 1 in hasUrl?hasUrl[1]:false)||(hasHash && 1 in hasHash?hasHash[1]:false) ){
+		$('input').val( input );
+		$('#chk').click();
+	}
+
+	
 });
 
-function loadHandler( img ){
+function loadHandler( img, isTimeout ){
 	
 	var lckey = $(img).data('key').toLowerCase();
 	loaded[lckey].loaded++;
+	
+	clearTimeout( $(img).data('timeout') );
 	
 	if( loaded[lckey].loaded == 32 ){
 		running = false;
@@ -104,63 +157,67 @@ function loadHandler( img ){
 	}
 	total++;
 	
-	if( img.height < 160 ){
-		$('#c'+lckey).text(lckey + ': loaded '+loaded[lckey].loaded+'/32, found '+loaded[lckey].found+'/32, elapsed ' + (+new Date() - loaded[lckey].start) + 'ms');
+	if( img.height < 160 || isTimeout ){
+		
+		if( isTimeout ){
+			$(img).unbind('load');
+			delete( img );
+			loaded[lckey].timeout++;
+		}
+		$('#c'+lckey).text( ich.log({
+			key : lckey,
+			loaded : loaded[lckey].loaded,
+			found: loaded[lckey].found,
+			timeout: loaded[lckey].timeout,
+			elapsed: (+new Date() - loaded[lckey].start) + 'ms'
+		},true));
+		
 		return false;
 	}
 
 	loaded[lckey].found++;
-	$('#c'+lckey).text(lckey + ': loaded '+loaded[lckey].loaded+'/32, found '+loaded[lckey].found+'/32, elapsed ' + (+new Date() - loaded[lckey].start) + 'ms');
+	$('#c'+lckey).text( ich.log({
+		key : lckey,
+		loaded : loaded[lckey].loaded,
+		found: loaded[lckey].found,
+		timeout: loaded[lckey].timeout,
+		elapsed: (+new Date() - loaded[lckey].start) + 'ms'
+	},true));
 	
 	$('#results > .item, #results .info').slice( 50 ).remove();
 	
-	var elem = $('<div>')
-		.addClass('item')
-		.prependTo( $('#results') )
-		.fadeOut( 0 );
+	ich.item( { key : $(img).data('key') } ).prependTo( '#results' ).fadeIn( 255 );
 	
-	
-	var a = $('<a>')
-		.addClass('thumb')
-		.prop('href',img.src.replace(/b\.jpg.*$/,'.jpg') )
-		.appendTo( elem );
-	
-	
-	
-	$(img).appendTo( a );
-	
-	var span = $('<span>')
-		.appendTo( elem );
+}
 
-	$('<a>')
-		.prop('href','http://reddit.com/s/'+a.prop('href').replace(/\.jpg$/,'').replace(/i\./,''))
-		.prop('target','_blank')
-		.text( $(img).data('key') )
-		.appendTo( span );
-
-	$('<a>')
-		.prop('href','http://reddit.com/s/'+a.prop('href'))
-		.prop('target','_blank')
-		.html('r<sup>1</sup>')
-		.appendTo( span );
+function updateHeart( amount ){
 	
-	$('<a>')
-		.prop('href','http://reddit.com/s/'+a.prop('href').replace(/\.jpg$/,'').replace(/i\./,''))
-		.prop('target','_blank')
-		.html('r<sup>2</sup>')
-		.appendTo( span );
 
-	$('<a>')
-		.prop('href','http://facebook.com/sharer.php?u='+a.prop('href'))
-		.prop('target','_blank')
-		.html('f')
-		.appendTo( span );
-
-	$('<a>')
-		.prop('href','https://m.google.com/app/plus/x/?v=compose&content='+a.prop('href'))
-		.prop('target','_blank')
-		.html('g+')
-		.appendTo( span );
-
-	elem.fadeIn( 255 );
+	
+	try{
+		if( !amount ){
+			var h = localStorage.getItem('hearts');
+			if( h ){
+				amount = h.split(',').length;
+			}
+		}
+	}
+	catch(e){ amount = 0 }	
+	
+	if( amount ){
+		$('h1 a span').text( amount );
+	}
+	
+	if( $('#clear-history').length == 0 ){
+		$('<button>')
+			.prop('id','clear-history')
+			.text('clear \u2764')
+			.insertAfter('#abt')
+			.click( function(e){
+				localStorage.removeItem('hearts');
+				$('h1 a span').text(0);
+				$(this).remove();
+			});
+	}
+	
 }
